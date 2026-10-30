@@ -1,0 +1,83 @@
+import java.util.Scanner;
+ 
+public class DelimiterChecker {
+ 
+    
+    static class CharStack {
+        private char[] data = new char[10];
+        private int size = 0;
+ 
+        void push(char c) {
+            if (size == data.length) {
+                data = java.util.Arrays.copyOf(data, size * 2);
+            }
+            data[size++] = c;
+        }
+ 
+        char pop() {
+            return data[--size];
+        }
+ 
+        char peek() {
+            return data[size - 1];
+        }
+ 
+        boolean isEmpty() {
+            return size == 0;
+        }
+    }
+ 
+    static boolean isOpening(char c) {
+        return c == '(' || c == '[' || c == '{';
+    }
+ 
+    static boolean isClosing(char c) {
+        return c == ')' || c == ']' || c == '}';
+    }
+ 
+    static boolean matches(char open, char close) {
+        return (open == '(' && close == ')')
+            || (open == '[' && close == ']')
+            || (open == '{' && close == '}');
+    }
+ 
+    
+    static String check(String input) {
+        CharStack stack = new CharStack();
+ 
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+ 
+            if (isOpening(c)) {
+                stack.push(c);
+            } else if (isClosing(c)) {
+                if (stack.isEmpty()) {
+                    return "Invalid - closing delimiter '" + c
+                         + "' at position " + (i + 1) + " has no matching opening delimiter";
+                }
+                char top = stack.peek();
+                if (matches(top, c)) {
+                    stack.pop();
+                } else {
+                    return "Invalid - mismatched delimiters: '" + c
+                         + "' at position " + (i + 1) + " does not match '" + top + "'";
+                }
+            }
+           
+        }
+ 
+        if (!stack.isEmpty()) {
+            return "Invalid - unmatched opening delimiter '" + stack.peek() + "' remains";
+        }
+        return "Valid";
+    }
+ 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter a sequence: ");
+        String input = sc.hasNextLine() ? sc.nextLine() : "";
+        System.out.println("Input: " + input);
+        System.out.println("Result: " + check(input));
+        sc.close();
+    }
+}
